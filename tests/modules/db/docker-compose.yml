@@ -1,0 +1,16 @@
+##VERSION##
+
+# include aliases.yml
+
+services:
+    db:
+        #<<: *logging
+        image: mariadb:10.3
+        secrets:
+            - DB_ROOT_PASSWORD
+        environment:
+            - MYSQL_ROOT_PASSWORD_FILE=/run/secrets/DB_ROOT_PASSWORD
+
+secrets:
+    DB_ROOT_PASSWORD:
+        external: true

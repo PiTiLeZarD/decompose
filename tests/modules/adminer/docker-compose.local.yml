@@ -1,0 +1,10 @@
+##VERSION##
+
+services:
+    adminer:
+        container_name: adminer
+        networks:
+            - backend
+        environment:
+            - ADMINER_DESIGN=mvt
+            - ADMINER_DEFAULT_SERVER=db

@@ -1,0 +1,10 @@
+##VERSION##
+
+# include portainerstack.yml
+
+services:
+    portainer:
+        #<<: *portainer_front
+
+    agent:
+        #<<: *portainer_agent

@@ -1,0 +1,16 @@
+##VERSION##
+
+# include aliases.yml
+
+services:
+    adminer:
+        #<<: *logging
+        image: adminer:latest
+        networks:
+            - adminer
+        environment:
+            - ADMINER_DEFAULT_SERVER=db
+            - ADMINER_PLUGINS=tables-filter dump-bz2 dump-date
+
+networks:
+    adminer:

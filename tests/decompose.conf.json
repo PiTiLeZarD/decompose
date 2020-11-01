@@ -1,0 +1,9 @@
+{
+    "groups": {
+        "local": ["web", "adminer", "db", "portainer"],
+        "justweb": ["web", "db"],
+        "production": ["web", "adminer"],
+        "uat": ["web", "adminer", "portainer"]
+    },
+    "environments": ["local", "uat", "production"]
+}

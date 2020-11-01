@@ -1,0 +1,34 @@
+x-portainer_front: &portainer_front
+    command: -H tcp://tasks.agent:9001 --tlsskipverify --ssl
+    ports:
+        - "34642:9000"
+    networks:
+        - agent_network
+    volumes:
+        - /some/path/portainer.crt:/certs/portainer.crt
+        - /some/path/portainer.key:/certs/portainer.key
+    deploy:
+        mode: replicated
+        replicas: 1
+        placement:
+            constraints:
+                - "node.role==manager"
+                - "node.labels.portainer==1"
+
+x-portainer_agent: &portainer_agent
+    image: portainer/agent:latest@sha256:8f994457bc32480bff351f0b1d371557238e69f5902037addfe76fa7bd930b9d
+    volumes:
+        - /var/run/docker.sock:/var/run/docker.sock
+        - /var/lib/docker/volumes:/var/lib/docker/volumes
+    networks:
+        - agent_network
+    deploy:
+        mode: global
+        placement:
+            constraints:
+                - "node.platform.os==linux"
+
+networks:
+    agent_network:
+        driver: overlay
+        attachable: true

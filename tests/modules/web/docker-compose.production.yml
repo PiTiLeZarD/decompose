@@ -1,0 +1,6 @@
+##VERSION##
+
+services:
+    web:
+        deploy:
+            replicas: 6

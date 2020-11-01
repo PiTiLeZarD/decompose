@@ -1,0 +1,11 @@
+##VERSION##
+
+# include aliases.yml
+
+services:
+    web:
+        #<<: *logging
+        image: python:3.8
+        command: python -m http.server 8888
+        ports:
+            - "8888:8888"

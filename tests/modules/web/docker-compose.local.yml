@@ -1,0 +1,7 @@
+##VERSION##
+
+services:
+    web:
+        container_name: web
+        volumes:
+            - ./modules/web/helloworld.html:/index.html

@@ -1,0 +1,15 @@
+##VERSION##
+
+# include aliases.yml
+
+services:
+    portainer:
+        #<<: *logging
+        image: portainer/portainer-ce:latest
+        ports:
+            - "8000:8000"
+        volumes:
+            - portainer_data:/data
+
+volumes:
+    portainer_data:
