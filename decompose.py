@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+# Author: Jonathan Adami (pitilezard@gmail.com)
+# Source: https://github.com/PiTiLeZarD/decompose
 
 import argparse
 import glob
