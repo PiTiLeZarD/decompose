@@ -32,9 +32,11 @@ def getConfig():
     if not os.path.isdir(arguments.path):
         raise Exception('{0} is not a valid path'.format(arguments.path))
 
-    configfile = getPath(arguments.configfile)
+    configfile = arguments.configfile
     if not os.path.isfile(configfile):
-        raise Exception('{0} could not be found'.format(configfile))
+        configfile = getPath(arguments.configfile)
+        if not os.path.isfile(configfile):
+            raise Exception('{0} could not be found'.format(configfile))
 
     config = None
     with open(configfile, 'rb') as f:
