@@ -11,11 +11,11 @@ import json
 parser = argparse.ArgumentParser()
 parser.add_argument("-e", "--env", help="Specify the environment to use (default: local)",
                     default="local", choices=["local", "uat", "production", "front"])
-parser.add_argument("-g", "--group", action="append", help="Specify a group of services",
-                    default=[])
+parser.add_argument("-g", "--group", action="append", help="Specify a group of services", default=[])
 parser.add_argument("-c", "--configfile", help="Specify a config file", default='decompose.conf.json')
 parser.add_argument("-p", "--path", default=os.getcwd(), help="Path to find the root of modules")
 parser.add_argument("-pr", "--path_relative", default=None, help="Use relative path (can use a variable here)")
+parser.add_argument("--substitute", action="append", help="Other substitutions", default=[])
 parser.add_argument("-mp", "--modules_path", default='modules', help="Path to find modules from root")
 parser.add_argument("-o", "--output", default='docker-compose.yml', help="File in which the config will be saved")
 parser.add_argument("--dockercompose_version", default='3.8', help="Target a specific dockercompose version")
@@ -121,6 +121,9 @@ if __name__ == '__main__':
         dockercompose_file = getPath(arguments.output)
         if arguments.path_relative is not None:
             config = config.replace(os.path.abspath(getPath()), arguments.path_relative)
+
+        for substitution in arguments.substitute:
+            config = config.replace(*substitution.split(' '))
 
         with open(dockercompose_file, 'w') as f:
             f.write(config)
