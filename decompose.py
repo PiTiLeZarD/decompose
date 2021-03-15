@@ -52,7 +52,7 @@ def getAllServices():
         if group not in groups:
             raise Exception('Group {0} not found'.format(group))
 
-    available_services = set([s for group in groups for s in groups[group]])
+    available_services = set([f.split('/')[-2] for f in glob.glob(getPath(arguments.modules_path, '**/docker-compose.yml'))])
     services = set([s for g in arguments.group for s in groups[g]] + arguments.service)
     services = [s for s in services if s in available_services]
     if len(services) == 0:
