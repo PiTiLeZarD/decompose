@@ -7,6 +7,7 @@ import glob
 import os
 import subprocess
 import json
+import platform
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-e", "--env", help="Specify the environment to use (default: local)",
@@ -72,12 +73,14 @@ for common_file in glob.glob(getPath(arguments.modules_path, '*.yml')):
         common[os.path.basename(common_file)] = f.read()
 
 
-def use_file(service, env=None):
+def use_file(service, env=None, required=True):
     filename = 'docker-compose.{0}yml'.format('' if env is None else '{0}.'.format(env))
     filename = getPath(arguments.modules_path, service, filename)
 
     if not os.path.isfile(filename):
-        raise Exception("Service {0} misconfigured (cannot find {1})".format(service, filename))
+        if required:
+            raise Exception("Service {0} misconfigured (cannot find {1})".format(service, filename))
+        return False
 
     file_content = None
     with open(filename, 'r') as f:
@@ -104,6 +107,7 @@ if __name__ == '__main__':
     for service in getAllServices():
         compose_files.append(use_file(service))
         compose_files.append(use_file(service, env=arguments.env))
+        compose_files.append(use_file(service, env=platform.machine(), required=False))
 
     docker_compose_command = ['docker-compose']
     env_file = getPath('.env.{0}'.format(arguments.env))
