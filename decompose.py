@@ -107,7 +107,9 @@ if __name__ == '__main__':
     for service in getAllServices():
         compose_files.append(use_file(service))
         compose_files.append(use_file(service, env=arguments.env))
-        compose_files.append(use_file(service, env=platform.machine(), required=False))
+        platform_specific = use_file(service, env=platform.machine(), required=False)
+        if platform_specific:
+            compose_files.append(platform_specific)
 
     docker_compose_command = ['docker-compose']
     env_file = getPath('.env.{0}'.format(arguments.env))
