@@ -7,7 +7,6 @@ import glob
 import os
 import subprocess
 import json
-import platform
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
@@ -109,16 +108,14 @@ for common_file in glob.glob(getPath(arguments.modules_path, "*.yml")):
         common[os.path.basename(common_file)] = f.read()
 
 
-def use_file(service, env=None, required=True):
+def use_file(service, env=None):
     filename = "docker-compose.{0}yml".format("" if env is None else "{0}.".format(env))
     filename = getPath(arguments.modules_path, service, filename)
 
     if not os.path.isfile(filename):
-        if required:
-            raise Exception(
-                "Service {0} misconfigured (cannot find {1})".format(service, filename)
-            )
-        return False
+        raise Exception(
+            "Service {0} misconfigured (cannot find {1})".format(service, filename)
+        )
 
     file_content = None
     with open(filename, "r") as f:
@@ -131,9 +128,25 @@ def use_file(service, env=None, required=True):
         file_content = file_content.replace("# include {0}".format(item), common[item])
     file_content = file_content.replace("#<<: *", "<<: *")
 
+    grouped_maps_file = []
+    cursor = 0
+    group = []
+    prefix = "        <<: "
+    for num, line in enumerate(file_content.split("\n"), 1):
+        if "%s*" % prefix in line:
+            if num - cursor > 1:
+                group = []
+            cursor = num
+            group.append(line.replace(prefix, ""))
+        else:
+            if len(group) > 0:
+                grouped_maps_file.append("%s[%s]" % (prefix, ", ".join(group)))
+                group = []
+            grouped_maps_file.append(line)
+
     filename = getPath("{0}_{1}".format(service, os.path.basename(filename)))
     with open(filename, "w") as f:
-        f.write(file_content)
+        f.write("\n".join(grouped_maps_file))
 
     return filename
 
@@ -147,9 +160,6 @@ if __name__ == "__main__":
     for service in getAllServices():
         compose_files.append(use_file(service))
         compose_files.append(use_file(service, env=arguments.env))
-        platform_specific = use_file(service, env=platform.machine(), required=False)
-        if platform_specific:
-            compose_files.append(platform_specific)
 
     docker_compose_command = ["docker-compose"]
     env_file = getPath(".env.{0}".format(arguments.env))
@@ -181,3 +191,4 @@ if __name__ == "__main__":
     finally:
         for compose_file in compose_files:
             os.unlink(compose_file)
+            
